@@ -1,0 +1,11 @@
+[package]
+name = "brick_game"
+version = "1.0.0"
+authors = ["artstar"]
+edition = "2018"
+
+[dependencies]
+rand = "0.6.5"
+crossterm = "0.16.0"
+log = "0.4.8"
+simple-logging = "2.0.2"
