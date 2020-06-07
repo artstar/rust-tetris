@@ -1,0 +1,1 @@
+import('./src/game').catch(e => console.error(e));

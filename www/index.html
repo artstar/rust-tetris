@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Brick Game</title>
+</head>
+<style>
+  :root {
+    --cell-size: 2;
+    --row-count: 20;
+    --col-count: 10;
+  }
+
+  html {
+    font-size: 15px;
+  }
+
+  .main {
+    margin: 5em auto;
+    box-sizing: content-box;
+    position: relative;
+    width: calc(var(--cell-size) * var(--col-count) * 1em);
+    height: calc(var(--cell-size) * var(--row-count) * 1em);
+    padding: 0 calc(var(--cell-size) * 5em);
+  }
+
+  .playfield {
+    background: #eeeeee;
+    position: absolute;
+    border: 1px solid black;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    left: calc(50% - var(--cell-size) * var(--col-count) / 2 * 1em);
+    width: calc(var(--cell-size) * var(--col-count) * 1em);
+    height: calc(var(--cell-size) * var(--row-count) * 1em);
+  }
+
+  .preview {
+    background: #eeeeee;
+    position: absolute;
+    border: 1px solid black;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    top: 0;
+    right: 0;
+    width: calc(var(--cell-size) * 4em);
+    height: calc(var(--cell-size) * 4em);
+  }
+
+  .cell {
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-bottom: none;
+    background: #eeeeee;
+    width: calc(var(--cell-size) * 1em);
+    height: calc(var(--cell-size) * 1em);
+  }
+
+  .cell.color-0 {
+    background: #f5f5f5;
+  }
+
+  .cell.color-1 {
+    background: #AA0000;
+  }
+
+  .cell.color-2 {
+    background: #603813;
+  }
+
+  .cell.color-3 {
+    background: #ba690b
+  }
+
+  .cell.color-4 {
+    background: #652D90
+  }
+
+  .cell.color-5 {
+    background: #006838;
+  }
+
+  .cell.color-6 {
+    background: #a19123;
+  }
+
+  .cell.color-7 {
+    background: #2B388F;
+  }
+
+  .info {
+    position: absolute;
+    right: 0;
+    top: calc(var(--cell-size) * 5em);
+    width: calc(var(--cell-size) * 4em);
+    height: 2em;
+  }
+
+  .score {
+    font-size: 1.5em;
+  }
+
+  .menu {
+    display: none;
+    background: rgba(238, 238, 238, 0.8);
+    position: absolute;
+    border: 1px solid black;
+    top: 0;
+    left: calc(50% - var(--cell-size) * var(--col-count) / 2 * 1em);
+    width: calc(var(--cell-size) * var(--col-count) * 1em);
+    height: calc(var(--cell-size) * var(--row-count) * 1em);
+  }
+
+  .menu.visible {
+    display: block;
+  }
+
+  .menu .item {
+    margin: 1em 0 2em;
+    font-size: 1.5em;
+    text-align: center;
+    color: black;
+  }
+
+  .menu .item.selected {
+    color: blue;
+  }
+</style>
+<body>
+<div class="main">
+  <div class="playfield"></div>
+  <div class="preview"></div>
+  <div class="info"><div class="score"></div></div>
+  <div class="menu"></div>
+</div>
+<script src="./index.js"></script>
+</body>
+</html>

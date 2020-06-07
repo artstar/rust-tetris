@@ -1,6 +1,6 @@
+use crate::bootstrap::Renderable;
+use crate::bootstrap::Settings;
 use crate::game::tetris::tetromino::Block;
-use crate::settings::Renderable;
-use crate::settings::Settings;
 use std::cmp::min;
 use std::collections::HashSet;
 use std::iter::FromIterator;
@@ -121,7 +121,10 @@ impl TetrisField {
         let shape = block.shape();
         let len = shape.len() as usize;
         let mut altitude = self.field.len() as i16;
+
+        // For each column of falling tetromino
         for i in 0..len {
+            // Get the lowest cell of column
             let mut lowest: Option<i16> = None;
             for (j, _) in shape.iter().enumerate() {
                 if shape[j][i] > 0 {
@@ -129,13 +132,16 @@ impl TetrisField {
                 }
             }
             if let Some(lowest) = lowest {
+                // Then the highest cell of ground but lower than tetromino
                 let mut highest = self.field.len() as i16;
-                for y in 0..self.field.len() {
+                for y in (lowest as usize)..self.field.len() {
                     if self.field[y][(block.x + i as i16) as usize] > 0 {
                         highest = y as i16;
                         break;
                     }
                 }
+
+                // Total drop distance equals to minimun of distances by columns
                 altitude = min(altitude, highest - lowest - 1)
             }
         }

@@ -1,11 +1,27 @@
 [package]
 name = "brick_game"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["artstar"]
 edition = "2018"
 
+[[bin]]
+name = "brick_game_console"
+path = "src/cli.rs"
+
+[lib]
+name = "brick_game_wasm"
+path = "src/wasm.rs"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
-rand = "0.6.5"
+wasm-bindgen = "0.2"
+wee_alloc = "0.4.5"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 crossterm = "0.16.0"
 log = "0.4.8"
 simple-logging = "2.0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true

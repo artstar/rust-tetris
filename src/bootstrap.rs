@@ -1,5 +1,14 @@
 use std::ops::{Deref, DerefMut};
-use std::time::Duration;
+use wasm_bindgen::prelude::*;
+
+pub trait Game {
+    type Pause;
+    fn new(settings: Settings, start: Timestamp) -> Self;
+    fn frame(&mut self, now: Timestamp, action: Option<Action>) -> GameChange<Self::Pause>;
+}
+
+// As milliseconds. Not very elegant solution but easiest for WASM
+pub type Timestamp = u64;
 
 #[derive(Debug, Clone)]
 pub struct Renderable(pub Vec<Vec<u8>>);
@@ -17,14 +26,17 @@ impl DerefMut for Renderable {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Settings {
     // If cols, rows < 5 something will crash.
     pub cols: u16,
     pub rows: u16,
-    pub delay: Duration,
+    pub delay: u64,
 }
 
-#[derive(Debug)]
+#[wasm_bindgen]
+#[repr(u8)]
+#[derive(Debug, Clone, Copy)]
 pub enum Action {
     Up,
     Down,
@@ -44,8 +56,7 @@ pub struct GameMode {
 #[derive(Debug)]
 pub struct MenuItem<T> {
     pub id: T,
-    pub string: String,
-    pub top: u16,
+    pub string: &'static str,
     pub selectable: bool,
 }
 

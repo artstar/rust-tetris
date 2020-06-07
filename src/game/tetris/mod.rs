@@ -1,13 +1,12 @@
 pub mod tetrisfield;
 pub mod tetromino;
 
+use crate::bootstrap::{
+    Action, Game, GameChange, GameMode, MenuItem, MenuMode, Renderable, Settings, Timestamp,
+};
 use crate::game::tetris::tetrisfield::TetrisField;
 use crate::game::tetris::tetromino::{Block, Tetromino, I, J, L, O, S, T, Z};
-use crate::settings::{Action, GameChange, GameMode, MenuItem, MenuMode, Renderable, Settings};
-use rand::seq::SliceRandom;
-use rand::thread_rng;
 use std::mem;
-use std::time::Instant;
 
 pub enum TetrisPause {
     Title,
@@ -16,9 +15,9 @@ pub enum TetrisPause {
     Exit,
 }
 
-pub struct Tetris<'a> {
-    settings: &'a Settings,
-    moment: Instant,
+pub struct Tetris {
+    settings: Settings,
+    moment: Timestamp,
     field: TetrisField,
     state: GameState,
     pause: Option<MenuMode<TetrisPause>>,
@@ -26,8 +25,10 @@ pub struct Tetris<'a> {
     bag: Vec<Tetromino>,
 }
 
-impl<'a> Tetris<'a> {
-    pub fn new(settings: &'a Settings, start: Instant) -> Tetris {
+impl Game for Tetris {
+    type Pause = TetrisPause;
+
+    fn new(settings: Settings, start: Timestamp) -> Self {
         let field = TetrisField::new(&settings);
         Tetris {
             moment: start,
@@ -40,26 +41,7 @@ impl<'a> Tetris<'a> {
         }
     }
 
-    pub fn random_block(&mut self) -> Tetromino {
-        if self.bag.is_empty() {
-            for _ in 0..BAG_SIZE {
-                self.bag.append(&mut vec![
-                    Tetromino::from(I()),
-                    Tetromino::from(T()),
-                    Tetromino::from(J()),
-                    Tetromino::from(L()),
-                    Tetromino::from(S()),
-                    Tetromino::from(Z()),
-                    Tetromino::from(O()),
-                ])
-            }
-            let mut rng = thread_rng();
-            self.bag.shuffle(&mut rng);
-        }
-        self.bag.pop().unwrap()
-    }
-
-    pub fn frame(&mut self, now: Instant, action: Option<Action>) -> GameChange<TetrisPause> {
+    fn frame(&mut self, now: Timestamp, action: Option<Action>) -> GameChange<TetrisPause> {
         match &mut self.pause {
             None => {
                 if matches!(action, Some(Action::Escape)) {
@@ -96,13 +78,34 @@ impl<'a> Tetris<'a> {
             None => GameChange::Draw(self.to_drawable()),
         }
     }
+}
+
+impl Tetris {
+    pub fn random_block(&mut self) -> Tetromino {
+        if self.bag.is_empty() {
+            for _ in 0..BAG_SIZE {
+                self.bag.append(&mut vec![
+                    Tetromino::from(I()),
+                    Tetromino::from(T()),
+                    Tetromino::from(J()),
+                    Tetromino::from(L()),
+                    Tetromino::from(S()),
+                    Tetromino::from(Z()),
+                    Tetromino::from(O()),
+                ])
+            }
+        }
+        // I had rand::thread_rng before but it costs 20kb of WASM code
+        let rndidx = (self.moment % 1000) as usize % self.bag.len();
+        self.bag.remove(rndidx)
+    }
 
     pub fn state_start(&mut self) {
         let block = Block::spawn(self.random_block(), &self.settings);
         self.run_cicle(block);
     }
 
-    pub fn state_fall(&mut self, now: Instant, action: Option<Action>) -> bool {
+    pub fn state_fall(&mut self, now: Timestamp, action: Option<Action>) -> bool {
         let mut drop = false;
         let mut changed = false;
         if let GameState::Fall(ref mut block, _) = &mut self.state {
@@ -125,7 +128,7 @@ impl<'a> Tetris<'a> {
                 _ => changed = false,
             };
 
-            if now.saturating_duration_since(self.moment) >= self.settings.delay {
+            if !drop && (now - self.moment >= self.settings.delay) {
                 self.moment = now;
                 if self.field.try_move(block, 0, 1) {
                     changed = true
@@ -164,26 +167,22 @@ impl<'a> Tetris<'a> {
         MenuMode::new(vec![
             MenuItem {
                 id: TetrisPause::Title,
-                string: "Menu".into(),
-                top: 1,
+                string: "Menu",
                 selectable: false,
             },
             MenuItem {
                 id: TetrisPause::Continue,
-                string: "Continue".into(),
-                top: 3,
+                string: "Continue",
                 selectable: true,
             },
             MenuItem {
                 id: TetrisPause::Restart,
-                string: "New Game".into(),
-                top: 5,
+                string: "New Game",
                 selectable: true,
             },
             MenuItem {
                 id: TetrisPause::Exit,
-                string: "Exit".into(),
-                top: 7,
+                string: "Exit",
                 selectable: true,
             },
         ])
@@ -193,20 +192,17 @@ impl<'a> Tetris<'a> {
         MenuMode::new(vec![
             MenuItem {
                 id: TetrisPause::Title,
-                string: "You Died".into(),
-                top: 1,
+                string: "You Died",
                 selectable: false,
             },
             MenuItem {
                 id: TetrisPause::Restart,
-                string: "New Game".into(),
-                top: 3,
+                string: "New Game",
                 selectable: true,
             },
             MenuItem {
                 id: TetrisPause::Exit,
-                string: "Exit".into(),
-                top: 5,
+                string: "Exit",
                 selectable: true,
             },
         ])

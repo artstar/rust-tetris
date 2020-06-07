@@ -1,4 +1,4 @@
-use crate::settings::{Renderable, Settings};
+use crate::bootstrap::{Renderable, Settings};
 
 pub struct Block {
     pub tetromino: Tetromino,
@@ -175,11 +175,17 @@ impl Tetromino {
                 .iter()
                 .map(|v| {
                     let mut vec = v.to_vec();
+                    if vec.len() < 3 {
+                        vec.insert(0, 0)
+                    }
                     vec.resize(4, 0);
                     vec
                 })
                 .collect(),
         );
+        if v.len() < 4 {
+            v.insert(0, vec![0u8, 0u8, 0u8, 0u8]);
+        }
         v.resize(4, vec![0u8, 0u8, 0u8, 0u8]);
         v
     }
@@ -192,8 +198,13 @@ pub trait Figure {
 pub struct I();
 
 impl Figure for I {
-    const SHAPE: &'static [&'static [u8]] =
-        &[&[0, 0, 0, 0], &[1, 1, 1, 1], &[0, 0, 0, 0], &[0, 0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[0, 0, 0, 0],
+        &[1, 1, 1, 1],
+        &[0, 0, 0, 0],
+        &[0, 0, 0, 0]
+    ];
 }
 
 impl From<I> for Tetromino {
@@ -205,7 +216,12 @@ impl From<I> for Tetromino {
 pub struct T();
 
 impl Figure for T {
-    const SHAPE: &'static [&'static [u8]] = &[&[0, 2, 0], &[2, 2, 2], &[0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[0, 2, 0],
+        &[2, 2, 2],
+        &[0, 0, 0]
+    ];
 }
 
 impl From<T> for Tetromino {
@@ -217,7 +233,12 @@ impl From<T> for Tetromino {
 pub struct J();
 
 impl Figure for J {
-    const SHAPE: &'static [&'static [u8]] = &[&[3, 0, 0], &[3, 3, 3], &[0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[3, 0, 0],
+        &[3, 3, 3],
+        &[0, 0, 0]
+    ];
 }
 
 impl From<J> for Tetromino {
@@ -229,7 +250,12 @@ impl From<J> for Tetromino {
 pub struct L();
 
 impl Figure for L {
-    const SHAPE: &'static [&'static [u8]] = &[&[0, 0, 4], &[4, 4, 4], &[0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[0, 0, 4],
+        &[4, 4, 4],
+        &[0, 0, 0]
+    ];
 }
 
 impl From<L> for Tetromino {
@@ -241,7 +267,12 @@ impl From<L> for Tetromino {
 pub struct S();
 
 impl Figure for S {
-    const SHAPE: &'static [&'static [u8]] = &[&[0, 5, 5], &[5, 5, 0], &[0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[0, 5, 5],
+        &[5, 5, 0],
+        &[0, 0, 0]
+    ];
 }
 
 impl From<S> for Tetromino {
@@ -253,7 +284,12 @@ impl From<S> for Tetromino {
 pub struct Z();
 
 impl Figure for Z {
-    const SHAPE: &'static [&'static [u8]] = &[&[6, 6, 0], &[0, 6, 6], &[0, 0, 0]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[6, 6, 0],
+        &[0, 6, 6],
+        &[0, 0, 0]
+    ];
 }
 
 impl From<Z> for Tetromino {
@@ -265,7 +301,11 @@ impl From<Z> for Tetromino {
 pub struct O();
 
 impl Figure for O {
-    const SHAPE: &'static [&'static [u8]] = &[&[7, 7], &[7, 7]];
+    #[rustfmt::skip]
+    const SHAPE: &'static [&'static [u8]] = &[
+        &[7, 7],
+        &[7, 7]
+    ];
 }
 
 impl From<O> for Tetromino {

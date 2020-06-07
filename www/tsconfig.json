@@ -1,0 +1,25 @@
+{
+  "files": [
+    "index.ts"
+  ],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "lib": [
+      "es2018",
+      "es2019",
+      "esnext.bigint",
+      "dom"
+    ],
+    "strictNullChecks": false,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "baseUrl": ""
+  },
+  "compileOnSave": false
+}

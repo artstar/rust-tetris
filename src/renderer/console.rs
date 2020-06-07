@@ -1,5 +1,5 @@
+use crate::bootstrap::{Action, GameMode, MenuMode, Renderable, Settings};
 use crate::renderer::console::ConsoleSymbol::{Simple, Styled};
-use crate::settings::{Action, GameMode, MenuMode, Renderable, Settings};
 use crossterm::event::{read, Event, KeyCode};
 use crossterm::style::{Color, ContentStyle, Print, PrintStyledContent, StyledContent};
 use crossterm::{cursor, terminal, Command, ExecutableCommand, QueueableCommand};
@@ -11,8 +11,8 @@ use std::sync::mpsc::Sender;
 use std::thread;
 use std::thread::JoinHandle;
 
-pub struct ConsoleView<'a> {
-    settings: &'a Settings,
+pub struct ConsoleView {
+    settings: Settings,
     stdout: RefCell<Stdout>,
     width: u16,
     height: u16,
@@ -20,14 +20,14 @@ pub struct ConsoleView<'a> {
     color: Option<Color>,
 }
 
-impl<'a> ConsoleView<'a> {
+impl ConsoleView {
     pub fn new(
-        settings: &'a Settings,
+        settings: Settings,
         width: u16,
         height: u16,
         char: char,
         color: Option<Color>,
-    ) -> ConsoleView<'a> {
+    ) -> ConsoleView {
         let stdout = RefCell::new(stdout());
         ConsoleView {
             settings,
@@ -166,14 +166,14 @@ impl<'a> ConsoleView<'a> {
         self.empty()?;
         for (idx, item) in menu.get_items().iter().enumerate() {
             let out = if matches!(menu.get_selected(), Some(x) if *x == idx) {
-                String::from("-> ") + &item.string + " <-"
+                String::from("-> ") + item.string + " <-"
             } else {
-                item.string.clone()
+                item.string.to_string()
             };
             let left = self.settings.cols * self.width / 2 - (1 + out.len() as u16) / 2;
             self.stdout
                 .borrow_mut()
-                .execute(cursor::MoveTo(1 + left, item.top))?;
+                .execute(cursor::MoveTo(1 + left, idx as u16 * 2 + 1))?;
             write!(self.stdout.borrow_mut(), "{}", out)?;
         }
         self.stdout.borrow_mut().flush()?;

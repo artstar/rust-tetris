@@ -1,0 +1,20 @@
+{
+  "name": "brick-game-wasm",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "scripts": {
+    "build": "rimraf dist/* && webpack",
+    "watch": "rimraf dist/* && webpack --watch"
+  },
+  "dependencies": {
+    "brick-game-wasm": "file:../pkg"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.3",
+    "typescript": "^3.7.5",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.1.0",
+    "ts-loader": "^7.0.0",
+    "copy-webpack-plugin": "^5.0.0"
+  }
+}
